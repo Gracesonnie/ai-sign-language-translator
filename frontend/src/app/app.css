@@ -1,0 +1,256 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+}
+
+h1 {
+  color: #2c3e50;
+  font-size: 2.5rem;
+}
+
+.subtitle {
+  color: #7f8c8d;
+  font-size: 1.1rem;
+  margin-bottom: 30px;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.btn-primary {
+  padding: 12px 24px;
+  background: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background: #219a52;
+}
+
+.btn-danger {
+  padding: 12px 24px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+.status {
+  background: #ecf0f1;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 20px 0;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.status.success {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.error {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.webcam-container {
+  position: relative;
+  margin: 20px auto;
+  max-width: 640px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  background: #000;
+}
+
+.webcam-video {
+  width: 100%;
+  display: block;
+  background: #000;
+}
+
+.webcam-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.loading {
+  color: #3498db;
+  font-size: 1.2rem;
+  margin: 20px 0;
+}
+
+.current-sign {
+  background: #f8f9fa;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 2px solid #3498db;
+}
+
+.sign-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.emoji-large {
+  font-size: 4rem;
+}
+
+.sign-name {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.confidence {
+  color: #27ae60;
+  font-size: 1.2rem;
+  background: #d4edda;
+  padding: 5px 15px;
+  border-radius: 20px;
+}
+
+.manual-buttons {
+  margin: 30px 0;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.manual-buttons h3 {
+  color: #7f8c8d;
+  margin-bottom: 15px;
+}
+
+.sign-buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.sign-btn {
+  padding: 20px 40px;
+  font-size: 1.2rem;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  cursor: pointer;
+  transition: all 0.3s;
+  min-width: 150px;
+}
+
+.sign-btn.hello {
+  background: #3498db;
+}
+
+.sign-btn.hello:hover {
+  background: #2980b9;
+  transform: scale(1.05);
+}
+
+.sign-btn.stand {
+  background: #9b59b6;
+}
+
+.sign-btn.stand:hover {
+  background: #8e44ad;
+  transform: scale(1.05);
+}
+
+.history-section {
+  margin-top: 30px;
+}
+
+.history-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.history-header h2 {
+  margin: 0;
+}
+
+.btn-delete {
+  padding: 8px 16px;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+}
+
+.btn-delete:hover {
+  background: #c0392b;
+  transform: scale(1.05);
+}
+
+.btn-delete:active {
+  transform: scale(0.95);
+}
+
+.history ul {
+  list-style: none;
+  padding: 0;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.history li {
+  padding: 10px;
+  border-bottom: 1px solid #ecf0f1;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.history-emoji {
+  font-size: 1.5rem;
+}
+
+.history-name {
+  font-weight: bold;
+  flex: 1;
+}
+
+.history-time {
+  color: #7f8c8d;
+  font-size: 0.9rem;
+}
+
+.empty {
+  text-align: center;
+  color: #95a5a6;
+  padding: 20px;
+}

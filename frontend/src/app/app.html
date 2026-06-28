@@ -1,0 +1,60 @@
+<div class="container">
+  <h1>🤖 AI Sign Translator</h1>
+  <p class="subtitle">Customer Service Assistant - Hello & Stand</p>
+
+  <div class="camera-controls">
+    <button (click)="startCamera()" class="btn-primary">📷 Start Camera</button>
+    <button (click)="stopCamera()" class="btn-danger">⏹ Stop Camera</button>
+  </div>
+
+  <div class="status" [class.success]="currentSign" [class.error]="message.includes('Error')">
+    <p>{{ message }}</p>
+  </div>
+
+  <div class="webcam-container" *ngIf="isDetecting">
+    <video #webcam class="webcam-video" autoplay playsinline></video>
+    <canvas #canvas class="webcam-canvas"></canvas>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>⏳ Loading model...</p>
+  </div>
+
+  <div class="current-sign" *ngIf="currentSign && !isLoading">
+    <h2>Detected Sign:</h2>
+    <div class="sign-display">
+      <span class="emoji-large">{{ currentEmoji }}</span>
+      <span class="sign-name">{{ currentSign }}</span>
+      <span class="confidence">Confidence: {{ confidence }}%</span>
+    </div>
+  </div>
+
+  <div class="manual-buttons">
+    <h3>🧪 Test Manually:</h3>
+    <div class="sign-buttons">
+      <button (click)="testSign('Hello', '👋')" class="sign-btn hello">👋 Hello</button>
+      <button (click)="testSign('Stand', '🧍‍♀️')" class="sign-btn stand">🧍‍♀️ Stand</button>
+    </div>
+  </div>
+
+  <div class="history-section">
+    <div class="history-header">
+      <h2>📋 History ({{ history.length }})</h2>
+      <button (click)="deleteAllHistory()" class="btn-delete" *ngIf="history.length > 0">
+        🗑️ Delete All
+      </button>
+    </div>
+
+    <div *ngIf="history.length === 0" class="empty">
+      <p>No signs detected yet. Show a gesture or click a button!</p>
+    </div>
+
+    <ul *ngIf="history.length > 0">
+      <li *ngFor="let log of history.slice().reverse()">
+        <span class="history-emoji">{{ log.signEmoji }}</span>
+        <span class="history-name">{{ log.signName }}</span>
+        <span class="history-time">{{ log.timestamp | date: 'short' }}</span>
+      </li>
+    </ul>
+  </div>
+</div>
