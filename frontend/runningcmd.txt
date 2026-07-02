@@ -1,0 +1,15 @@
+
+*RUN AS ADMIN*
+
+Database : taskkill /F /IM mysqld.exe
+net start MySQL80
+
+Backend: cd C:\Users\HP\sign-language-translator\backend\sign-translator
+.\mvnw spring-boot:run
+
+Frontend: cd C:\Users\HP\sign-language-translator\frontend
+ng serve
+
+Browser: http://localhost:4200
+
+

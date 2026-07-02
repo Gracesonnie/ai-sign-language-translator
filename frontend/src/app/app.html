@@ -1,6 +1,6 @@
 <div class="container">
   <h1>🤖 AI Sign Translator</h1>
-  <p class="subtitle">Customer Service Assistant - Hello & Stand</p>
+  <p class="subtitle">Customer Service Assistant - ASL Letter Recognition</p>
 
   <div class="camera-controls">
     <button (click)="startCamera()" class="btn-primary">📷 Start Camera</button>
@@ -23,7 +23,7 @@
   <div class="current-sign" *ngIf="currentSign && !isLoading">
     <h2>Detected Sign:</h2>
     <div class="sign-display">
-      <span class="emoji-large">{{ currentEmoji }}</span>
+      <span class="emoji-large">{{ currentEmoji || '❓' }}</span>
       <span class="sign-name">{{ currentSign }}</span>
       <span class="confidence">Confidence: {{ confidence }}%</span>
     </div>
@@ -51,7 +51,7 @@
 
     <ul *ngIf="history.length > 0">
       <li *ngFor="let log of history.slice().reverse()">
-        <span class="history-emoji">{{ log.signEmoji }}</span>
+        <span class="history-emoji">{{ log.signEmoji || '❓' }}</span>
         <span class="history-name">{{ log.signName }}</span>
         <span class="history-time">{{ log.timestamp | date: 'short' }}</span>
       </li>
