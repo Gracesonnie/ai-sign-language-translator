@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
 import { SignService } from './services/sign.service';
 
-// Declare MediaPipe and tmImage (for fallback)
 declare const tmImage: any;
 declare const tf: any;
 
@@ -26,117 +25,139 @@ export class AppComponent implements OnInit {
   isDetecting = false;
   message = 'Click "Start Camera" to begin';
   isLoading = false;
-  usePythonService = true; // Set to true to use Python AI service
 
   private lastDetectedSign = '';
   private lastDetectedEmoji = '';
-  private modelURL = 'https://teachablemachine.withgoogle.com/models/xTXWS7rR1/';
+
+  // YOUR A, B, C MODEL URL
+  private modelURL = 'https://teachablemachine.withgoogle.com/models/Z70ESd76G/';
+  
   private model: any = null;
   private webcam: any = null;
   private predictionInterval: any = null;
   private predictionCount = 0;
 
-  // ============================================
-  // SIGNS - Kept for manual testing
-  // ============================================
-
+  // A, B, C signs
   signs = [
-    { name: 'Hello', emoji: '👋' },
-    { name: 'Stand', emoji: '🧍‍♀️' }
+    { name: 'A', emoji: '✊' },
+    { name: 'B', emoji: '🖐️' },
+    { name: 'C', emoji: '🤏' }
   ];
-
-  // ============================================
-  // CONSTRUCTOR & LIFECYCLE
-  // ============================================
 
   constructor(private signService: SignService) {}
 
   ngOnInit() {
     this.loadHistory();
-    this.checkPythonService();
   }
 
   // ============================================
-  // CHECK PYTHON SERVICE
+  // RESET STATE
   // ============================================
 
-  checkPythonService() {
-    this.signService.checkPythonService().subscribe({
-      next: () => {
-        console.log('✅ Python AI Service is running!');
-        this.message = '✅ AI Service connected! Click "Start Camera".';
-      },
-      error: () => {
-        console.warn('⚠️ Python AI Service not running. Using Teachable Machine fallback.');
-        this.message = '⚠️ AI Service not running. Using Teachable Machine.';
-        this.usePythonService = false;
+  resetState(): void {
+    this.isLoading = false;
+    this.isDetecting = false;
+    this.message = '🔄 Reset complete. Click "Start Camera" to begin.';
+    this.currentSign = '';
+    this.currentEmoji = '';
+    this.confidence = 0;
+    this.predictionCount = 0;
+    
+    if (this.predictionInterval) {
+      clearInterval(this.predictionInterval);
+      this.predictionInterval = null;
+    }
+    
+    if (this.webcam) {
+      try {
+        this.webcam.stop();
+      } catch (e) {
+        console.log('Webcam stop error:', e);
       }
-    });
+      this.webcam = null;
+    }
+    
+    if (this.webcamRef && this.webcamRef.nativeElement) {
+      this.webcamRef.nativeElement.srcObject = null;
+    }
+    
+    const canvas = this.canvasRef?.nativeElement;
+    if (canvas) {
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }
+    
+    console.log('🔄 State reset successfully');
   }
 
   // ============================================
-  // START CAMERA
+  // START CAMERA - FIXED
   // ============================================
 
   async startCamera(): Promise<void> {
     try {
-      this.message = '⏳ Loading model...';
+      this.resetState();
+      this.message = '⏳ Starting camera...';
       this.isLoading = true;
       
-      this.lastDetectedSign = '';
-      this.lastDetectedEmoji = '';
-      
-      // If using Python service, we don't need to load tmImage
-      if (!this.usePythonService) {
-        await this.loadTeachableMachine();
+      // Step 1: Check if tmImage is loaded
+      let attempts = 0;
+      while (typeof tmImage === 'undefined' && attempts < 20) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        attempts++;
+        console.log(`⏳ Attempt ${attempts}/20...`);
       }
       
-      // Setup webcam using tmImage (still used for webcam capture)
+      if (typeof tmImage === 'undefined') {
+        throw new Error('tmImage not loaded. Please refresh the page.');
+      }
+      
+      console.log('✅ tmImage loaded');
+      
+      // Step 2: Load the model
+      const modelURL = this.modelURL + 'model.json';
+      const metadataURL = this.modelURL + 'metadata.json';
+      
+      console.log('📥 Loading model from:', modelURL);
+      this.model = await tmImage.load(modelURL, metadataURL);
+      console.log('✅ Model loaded!');
+      
+      // Step 3: Setup webcam
+      console.log('📷 Setting up webcam...');
       const flip = true;
       this.webcam = new tmImage.Webcam(640, 480, flip);
       await this.webcam.setup();
       await this.webcam.play();
+      console.log('✅ Webcam playing!');
       
+      // Step 4: Display video
       const videoElement = this.webcamRef?.nativeElement;
       if (videoElement) {
         videoElement.srcObject = this.webcam.video.srcObject;
         videoElement.style.display = 'block';
         await videoElement.play();
-        console.log('📹 Video is displaying!');
+        console.log('📹 Video displaying!');
+      } else {
+        console.warn('⚠️ Video element not found');
       }
       
-      this.message = this.usePythonService 
-        ? '🤖 Show an ASL letter gesture!' 
-        : '🤖 Show Hello 👋 or Stand 🧍‍♀️ gesture!';
-      
+      this.message = '🤖 Show A, B, or C gesture!';
       this.isDetecting = true;
       this.isLoading = false;
       this.predictionCount = 0;
       
+      // Step 5: Start prediction loop
       this.predictionInterval = setInterval(() => {
         this.predict();
-      }, 1500);
+      }, 1000);
       
     } catch (error) {
-      console.error('Error:', error);
+      console.error('❌ Error:', error);
       this.message = '❌ Error: ' + ((error as any).message || 'Check console');
       this.isLoading = false;
     }
-  }
-
-  // ============================================
-  // LOAD TEACHABLE MACHINE (Fallback)
-  // ============================================
-
-  async loadTeachableMachine(): Promise<void> {
-    if (typeof tmImage === 'undefined') {
-      throw new Error('tmImage not loaded. Please refresh the page.');
-    }
-    
-    const modelURL = this.modelURL + 'model.json';
-    const metadataURL = this.modelURL + 'metadata.json';
-    this.model = await tmImage.load(modelURL, metadataURL);
-    console.log('✅ Teachable Machine model loaded (fallback)!');
   }
 
   // ============================================
@@ -144,24 +165,39 @@ export class AppComponent implements OnInit {
   // ============================================
 
   async predict(): Promise<void> {
-    if (!this.isDetecting || !this.webcam) {
+    if (!this.isDetecting || !this.model || !this.webcam) {
       return;
     }
     
     try {
       this.predictionCount++;
-      
-      if (this.usePythonService) {
-        // ============================================
-        // USE PYTHON AI SERVICE
-        // ============================================
-        await this.predictWithPython();
-      } else {
-        // ============================================
-        // USE TEACHABLE MACHINE (Fallback)
-        // ============================================
-        await this.predictWithTeachableMachine();
+      if (this.predictionCount % 2 !== 0) {
+        return;
       }
+      
+      const prediction = await this.model.predict(this.webcam.canvas);
+      
+      const topPrediction = prediction.reduce((prev: any, current: any) => {
+        return (prev.probability > current.probability) ? prev : current;
+      });
+      
+      const confidenceValue = Math.round(topPrediction.probability * 100);
+      const predictedClass = topPrediction.className;
+      
+      if (confidenceValue > 70) {
+        const matchedSign = this.signs.find(s => s.name === predictedClass);
+        if (matchedSign) {
+          this.currentSign = matchedSign.name;
+          this.currentEmoji = matchedSign.emoji;
+          this.confidence = confidenceValue;
+          this.message = `✅ Detected: ${matchedSign.emoji} ${matchedSign.name} (${confidenceValue}% confidence)`;
+          
+          this.lastDetectedSign = matchedSign.name;
+          this.lastDetectedEmoji = matchedSign.emoji;
+        }
+      }
+      
+      this.drawPrediction(prediction);
       
     } catch (error) {
       console.error('Prediction error:', error);
@@ -169,126 +205,20 @@ export class AppComponent implements OnInit {
   }
 
   // ============================================
-  // PREDICT WITH PYTHON AI SERVICE
+  // DRAW PREDICTION
   // ============================================
-
-  async predictWithPython(): Promise<void> {
-    if (!this.model || !this.webcam) {
-      // If model not loaded, use canvas directly
-      const canvas = this.canvasRef?.nativeElement;
-      if (!canvas) return;
-      
-      // Get hand landmarks from canvas
-      // Note: You need MediaPipe integration for this
-      // For now, we'll use a dummy approach
-      const dummyLandmarks = this.getDummyLandmarks();
-      
-      this.signService.predictWithPython(dummyLandmarks).subscribe({
-        next: (response) => {
-          this.currentSign = response.letter;
-          this.confidence = response.confidence * 100;
-          this.message = `✅ AI Service: ${response.letter} (${this.confidence}%)`;
-          this.lastDetectedSign = response.letter;
-          this.lastDetectedEmoji = '';
-          this.drawLetter(response.letter);
-        },
-        error: (error) => {
-          console.error('Python service error:', error);
-          this.message = '❌ Error connecting to AI service';
-          this.usePythonService = false;
-        }
-      });
-    }
-  }
-
-  // ============================================
-  // PREDICT WITH TEACHABLE MACHINE (Fallback)
-  // ============================================
-
-  async predictWithTeachableMachine(): Promise<void> {
-    if (!this.model || !this.webcam) return;
-    
-    if (this.predictionCount % 2 !== 0) return;
-    
-    const prediction = await this.model.predict(this.webcam.canvas);
-    
-    const topPrediction = prediction.reduce((prev: any, current: any) => {
-      return (prev.probability > current.probability) ? prev : current;
-    });
-    
-    const confidenceValue = Math.round(topPrediction.probability * 100);
-    const predictedClass = topPrediction.className;
-    
-    if (confidenceValue > 70) {
-      const matchedSign = this.signs.find(s => s.name === predictedClass);
-      if (matchedSign) {
-        this.currentSign = matchedSign.name;
-        this.currentEmoji = matchedSign.emoji;
-        this.confidence = confidenceValue;
-        this.message = `👀 Detected: ${matchedSign.emoji} ${matchedSign.name} (${confidenceValue}%)`;
-        this.lastDetectedSign = matchedSign.name;
-        this.lastDetectedEmoji = matchedSign.emoji;
-      }
-    }
-    
-    this.drawPrediction(prediction);
-  }
-
-  // ============================================
-  // DUMMY LANDMARKS (For testing Python service)
-  // ============================================
-
-  getDummyLandmarks(): any[] {
-    // Generate 21 dummy landmarks for testing
-    const landmarks = [];
-    for (let i = 0; i < 21; i++) {
-      landmarks.push({
-        x: Math.random(),
-        y: Math.random(),
-        z: Math.random()
-      });
-    }
-    return landmarks;
-  }
-
-  // ============================================
-  // DRAW FUNCTIONS
-  // ============================================
-
-  drawLetter(letter: string): void {
-    const canvas = this.canvasRef?.nativeElement;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    
-    canvas.width = 640;
-    canvas.height = 480;
-    
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    
-    if (this.webcam && this.webcam.canvas) {
-      ctx.drawImage(this.webcam.canvas, 0, 0, canvas.width, canvas.height);
-    }
-    
-    // Draw large letter
-    ctx.fillStyle = 'rgba(0,0,0,0.7)';
-    ctx.fillRect(canvas.width/2 - 60, canvas.height/2 - 60, 120, 120);
-    
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 80px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(letter, canvas.width/2, canvas.height/2);
-  }
 
   drawPrediction(predictions: any[]): void {
     try {
       const canvas = this.canvasRef?.nativeElement;
-      if (!canvas) return;
+      if (!canvas) {
+        return;
+      }
       
       const ctx = canvas.getContext('2d');
-      if (!ctx) return;
+      if (!ctx) {
+        return;
+      }
       
       canvas.width = 640;
       canvas.height = 480;
@@ -328,32 +258,24 @@ export class AppComponent implements OnInit {
     }
     
     if (this.webcam) {
-      this.webcam.stop();
+      try {
+        this.webcam.stop();
+      } catch (e) {
+        console.log('Webcam stop error:', e);
+      }
+      this.webcam = null;
     }
     
     if (this.webcamRef && this.webcamRef.nativeElement) {
       this.webcamRef.nativeElement.srcObject = null;
     }
     
-    // Save the detected sign
     if (this.lastDetectedSign && this.lastDetectedEmoji) {
       this.signService.detectSign(this.lastDetectedSign, this.lastDetectedEmoji).subscribe({
         next: () => {
           this.message = `✅ Saved: ${this.lastDetectedEmoji} ${this.lastDetectedSign}`;
           this.loadHistory();
           console.log(`✅ Saved: ${this.lastDetectedSign}`);
-        },
-        error: (error) => {
-          this.message = '❌ Error saving. Check backend!';
-          console.error('Save error:', error);
-        }
-      });
-    } else if (this.lastDetectedSign) {
-      // If no emoji (from Python service), save with question mark
-      this.signService.detectSign(this.lastDetectedSign, '❓').subscribe({
-        next: () => {
-          this.message = `✅ Saved: ${this.lastDetectedSign}`;
-          this.loadHistory();
         },
         error: (error) => {
           this.message = '❌ Error saving. Check backend!';
@@ -413,7 +335,7 @@ export class AppComponent implements OnInit {
   }
 
   // ============================================
-  // MANUAL TEST
+  // TEST SIGN (Manual buttons)
   // ============================================
 
   testSign(signName: string, signEmoji: string): void {
@@ -432,7 +354,7 @@ export class AppComponent implements OnInit {
   }
 
   // ============================================
-  // DESTROY
+  // CLEANUP
   // ============================================
 
   ngOnDestroy(): void {
