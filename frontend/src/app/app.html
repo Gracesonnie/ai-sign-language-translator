@@ -1,23 +1,33 @@
 <div class="container">
-  <!-- WELCOME SECTION - ANIMATED -->
+  <!-- WELCOME SECTION -->
   <div class="welcome-section" *ngIf="!isDetecting && !isLoading && !currentSign">
-    <div class="welcome-emoji">👋</div>
+    <div class="gesture-container">
+      <svg class="animated-hand" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <g class="hand-group">
+          <path class="palm" d="M45 70 L40 45 L35 30 L45 15 L55 15 L65 30 L60 45 L55 70 Z" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
+          <path class="thumb" d="M45 30 L30 20 L25 30 L30 40" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
+          <path class="finger index" d="M40 45 L20 45 L18 55" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
+          <path class="finger middle" d="M48 45 L45 25 L48 15" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
+          <path class="finger ring" d="M55 45 L65 30 L68 35" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
+          <path class="finger pinky" d="M60 48 L75 40 L78 45" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
+        </g>
+      </svg>
+    </div>
     <h1 class="welcome-title">Hey!</h1>
     <p class="welcome-subtitle">Let's Get Started</p>
     <div class="welcome-hint">
       <span>Click below to begin</span>
-      <span class="arrow">↓</span>
+      <div class="arrow-down">↓</div>
     </div>
   </div>
 
-  <!-- MAIN APP - Hidden during loading -->
+  <!-- MAIN APP -->
   <div *ngIf="!isLoading && (isDetecting || currentSign)">
     <h1>🤖 AI Sign Translator</h1>
     <p class="subtitle">Customer Service Assistant - A, B, C</p>
   </div>
 
-  <!-- LOADING CONTROLS - ONLY SHOWN DURING LOADING -->
-  <!-- START, STOP, RESET buttons are ALL visible -->
+  <!-- LOADING CONTROLS -->
   <div class="loading-controls" *ngIf="isLoading">
     <div class="loading-icon-large">🧠</div>
     <p class="loading-text-large">Loading AI Model...</p>
@@ -25,34 +35,28 @@
       <div class="loading-bar-fill-large"></div>
     </div>
     <div class="loading-buttons">
-      <!-- START BUTTON - Disabled while loading -->
       <button class="btn-primary" disabled>
-        <span class="loading-spinner"> <span class="spinner"></span> Loading... </span>
+        <span class="loading-spinner">
+          <span class="spinner"></span> Loading...
+        </span>
       </button>
-      <!-- STOP BUTTON - Always visible and clickable -->
-      <button (click)="stopCamera()" class="btn-danger">⏹ Stop</button>
-      <!-- RESET BUTTON - Always visible and clickable -->
+      <button (click)="stopCamera()" class="btn-danger">⏹Stop </button>
       <button (click)="resetState()" class="btn-reset">🔄 Reset</button>
     </div>
   </div>
 
-  <!-- CAMERA CONTROLS - Hidden during loading -->
+  <!-- CAMERA CONTROLS -->
   <div class="camera-controls" *ngIf="!isLoading">
     <button (click)="startCamera()" class="btn-primary">📷 Start Camera</button>
-    <button (click)="stopCamera()" class="btn-danger" [disabled]="!isDetecting">
-      ⏹ Stop Camera
-    </button>
+    <button (click)="stopCamera()" class="btn-danger" [disabled]="!isDetecting">⏹ Stop Camera</button>
     <button (click)="resetState()" class="btn-reset">🔄 Reset</button>
   </div>
 
-  <!-- STATUS -->
-  <div class="status" [class.success]="currentSign" [class.error]="message.includes('Error')">
-    <p>{{ message }}</p>
-  </div>
 
-  <!-- WEBCAM -->
-  <div class="webcam-container" *ngIf="isDetecting">
-    <video #webcam class="webcam-video" autoplay playsinline></video>
+
+  <!-- WEBCAM - FORCED VISIBLE -->
+  <div class="webcam-container" id="webcamContainer">
+    <video #webcam id="webcamVideo" class="webcam-video" autoplay playsinline></video>
     <canvas #canvas class="webcam-canvas"></canvas>
     <div class="webcam-overlay">
       <span class="live-badge">● LIVE</span>
@@ -87,16 +91,16 @@
         🗑️ Delete All
       </button>
     </div>
-
+    
     <div *ngIf="history.length === 0" class="empty">
       <p>No signs detected yet. Show a gesture or click a button!</p>
     </div>
-
+    
     <ul *ngIf="history.length > 0">
       <li *ngFor="let log of history.slice().reverse()">
         <span class="history-emoji">{{ log.signEmoji }}</span>
         <span class="history-name">{{ log.signName }}</span>
-        <span class="history-time">{{ log.timestamp | date: 'short' }}</span>
+        <span class="history-time">{{ log.timestamp | date:'short' }}</span>
       </li>
     </ul>
   </div>
