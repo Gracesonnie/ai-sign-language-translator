@@ -37,7 +37,6 @@ export class AppComponent implements OnInit {
   private isPredicting = false;
 
   signs = [
-    { name: 'A', emoji: '✊' },
     { name: 'B', emoji: '🖐️' },
     { name: 'C', emoji: '🤏' }
   ];

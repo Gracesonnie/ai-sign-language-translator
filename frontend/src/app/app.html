@@ -24,7 +24,7 @@
   <!-- MAIN APP -->
   <div *ngIf="!isLoading && (isDetecting || currentSign)">
     <h1>🤖 AI Sign Translator</h1>
-    <p class="subtitle">Customer Service Assistant - A, B, C</p>
+    <p class="subtitle">Customer Service Assistant - B, C</p>
   </div>
 
   <!-- LOADING CONTROLS -->
@@ -77,7 +77,6 @@
   <div class="manual-buttons" *ngIf="!isLoading">
     <h3>🧪 Test Manually:</h3>
     <div class="sign-buttons">
-      <button (click)="testSign('A', '✊')" class="sign-btn a">✊ A</button>
       <button (click)="testSign('B', '🖐️')" class="sign-btn b">🖐️ B</button>
       <button (click)="testSign('C', '🤏')" class="sign-btn c">🤏 C</button>
     </div>
