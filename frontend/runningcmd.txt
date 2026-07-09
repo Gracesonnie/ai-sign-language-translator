@@ -4,13 +4,20 @@ Database : taskkill /F /IM mysqld.exe
 net start MySQL80
 browser view : http://localhost:8080/api/signs/history
 
-
 Backend: cd C:\Users\HomePC\ai-sign-language-translator\backend\sign-translator
 .\mvnw spring-boot:run
+
+Browser : http://localhost:8080/api/signs/history
 
 Frontend: cd C:\Users\HomePC\ai-sign-language-translator\frontend
 ng serve
 
 Browser: http://localhost:4200
 
-
+Database: 
+mysql -u root -p
+@Gathonie10#
+SHOW DATABASES;
+USE sign_language_db;
+SELECT * FROM sign_logs;
+EXIT;
