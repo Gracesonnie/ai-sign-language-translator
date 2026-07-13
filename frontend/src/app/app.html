@@ -1,106 +1,192 @@
 <div class="container">
-  <!-- WELCOME SECTION -->
-  <div class="welcome-section" *ngIf="!isDetecting && !isLoading && !currentSign">
-    <div class="gesture-container">
-      <svg class="animated-hand" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <g class="hand-group">
-          <path class="palm" d="M45 70 L40 45 L35 30 L45 15 L55 15 L65 30 L60 45 L55 70 Z" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
-          <path class="thumb" d="M45 30 L30 20 L25 30 L30 40" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
-          <path class="finger index" d="M40 45 L20 45 L18 55" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
-          <path class="finger middle" d="M48 45 L45 25 L48 15" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
-          <path class="finger ring" d="M55 45 L65 30 L68 35" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
-          <path class="finger pinky" d="M60 48 L75 40 L78 45" fill="none" stroke="#8ab4f8" stroke-width="2.5" stroke-linejoin="round"/>
-        </g>
-      </svg>
-    </div>
-    <h1 class="welcome-title">Hey!</h1>
-    <p class="welcome-subtitle">Let's Get Started</p>
-    <div class="welcome-hint">
-      <span>Click below to begin</span>
-      <div class="arrow-down">↓</div>
+  
+  <!-- ==================== VIEWPORT A: WELCOME HERO ENTRY LOBBY ==================== -->
+  <div class="homepage-portal" *ngIf="!isTerminalActive">
+    <div class="portal-hero-shield">
+
+      <div class="hero-eyebrow">
+        <span class="eyebrow-dot"></span> AI-Powered Live Translation
+      </div>
+
+      <!-- 👑 EXCEPTIONAL CONTRAST TYPOGRAPHY BLOCK -->
+      <h1 class="hero-headline">Bridging Conversations</h1>
+      
+      <div class="hero-typewriter-wrapper">
+        <span class="headline-accent text-rotate"><span class="wrap">{{ typewriterText$ | async }}</span></span>
+      </div>
+
+      <p class="hero-subhead">
+        SignBridge Pro connects user sign-language clients with support agents in real time — no interpreter wait, no typed forms, just natural conversation.
+      </p>
+
+      <!-- 🚀 PROUD, ELEVATED BUTTON PLACEMENT -->
+      <div class="portal-action-row">
+        <button (click)="activateTranslationHub()" class="btn-portal-launch">
+          🚀 Launch Translation Hub <span class="arrow-slide">→</span>
+        </button>
+      </div>
+
+      <!-- 🎨 CLEAN INTERMEDIARY BRIDGE VIEW -->
+      <div class="bridge-illustration" aria-hidden="true">
+        <div class="bridge-node bridge-node--sign">
+          <svg viewBox="0 0 64 64" class="bridge-icon">
+            <rect x="16" y="30" width="32" height="24" rx="12" class="icon-fill-cool" />
+            <rect x="14" y="14" width="7" height="22" rx="3.5" class="icon-fill-cool" />
+            <rect x="24" y="8" width="7" height="28" rx="3.5" class="icon-fill-cool" />
+            <rect x="34" y="8" width="7" height="28" rx="3.5" class="icon-fill-cool" />
+            <rect x="44" y="12" width="7" height="24" rx="3.5" class="icon-fill-cool" />
+          </svg>
+        </div>
+
+        <svg class="bridge-pulse-line" viewBox="0 0 200 40" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="bridgeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#fb923c" />
+            </linearGradient>
+          </defs>
+          <path d="M0,20 C50,2 150,38 200,20" class="pulse-path" />
+          <circle r="4" class="pulse-dot-traveling">
+            <animateMotion dur="2.4s" repeatCount="indefinite" path="M0,20 C50,2 150,38 200,20" />
+          </circle>
+        </svg>
+
+        <div class="bridge-node bridge-node--voice">
+          <svg viewBox="0 0 64 64" class="bridge-icon">
+            <path d="M14 24H22L34 14V50L22 40H14C12 40 10 38 10 36V28C10 26 12 24 14 24Z" class="icon-fill-warm" />
+            <path d="M42 22C46 26 46 38 42 42" class="icon-stroke-warm" />
+            <path d="M48 16C55 24 55 40 48 48" class="icon-stroke-warm" />
+          </svg>
+        </div>
+      </div>
+
+      <div class="feature-pill-row">
+        <div class="feature-pill">🤟 <span>Real-time sign recognition</span></div>
+        <div class="feature-pill">🎙️ <span>Live voice-to-text</span></div>
+        <div class="feature-pill">⚡ <span>Instant, no wait</span></div>
+      </div>
+
+      <div class="welcome-popup-card" [class.pop-in]="showToast">
+        <div class="popup-header">
+          <span class="pulse-status-dot"></span>
+          <strong>Assistant AI</strong>
+        </div>
+        <p class="popup-body">
+          "Welcome to our live customer service for sign support"
+        </p>
+      </div>
+
+      <p class="hero-footnote">No downloads. No sign-up. Just click and connect.</p>
+
     </div>
   </div>
 
-  <!-- MAIN APP -->
-  <div *ngIf="!isLoading && (isDetecting || currentSign)">
-    <h1>🤖 AI Sign Translator</h1>
-    <p class="subtitle">Customer Service Assistant - B, C</p>
-  </div>
-
-  <!-- LOADING CONTROLS -->
-  <div class="loading-controls" *ngIf="isLoading">
-    <div class="loading-icon-large">🧠</div>
-    <p class="loading-text-large">Loading AI Model...</p>
-    <div class="loading-bar-large">
-      <div class="loading-bar-fill-large"></div>
-    </div>
-    <div class="loading-buttons">
-      <button class="btn-primary" disabled>
-        <span class="loading-spinner">
-          <span class="spinner"></span> Loading...
-        </span>
-      </button>
-      <button (click)="stopCamera()" class="btn-danger">⏹Stop </button>
-      <button (click)="resetState()" class="btn-reset">🔄 Reset</button>
-    </div>
-  </div>
-
-  <!-- CAMERA CONTROLS -->
-  <div class="camera-controls" *ngIf="!isLoading">
-    <button (click)="startCamera()" class="btn-primary">📷 Start Camera</button>
-    <button (click)="stopCamera()" class="btn-danger" [disabled]="!isDetecting">⏹ Stop Camera</button>
-    <button (click)="resetState()" class="btn-reset">🔄 Reset</button>
-  </div>
-
-
-
-  <!-- WEBCAM - FORCED VISIBLE -->
-  <div class="webcam-container" id="webcamContainer">
-    <video #webcam id="webcamVideo" class="webcam-video" autoplay playsinline></video>
-    <canvas #canvas class="webcam-canvas"></canvas>
-    <div class="webcam-overlay">
-      <span class="live-badge">● LIVE</span>
-    </div>
-  </div>
-
-  <!-- CURRENT SIGN -->
-  <div class="current-sign" *ngIf="currentSign && !isLoading">
-    <h2>Detected Sign:</h2>
-    <div class="sign-display">
-      <span class="emoji-large">{{ currentEmoji }}</span>
-      <span class="sign-name">{{ currentSign }}</span>
-      <span class="confidence">Confidence: {{ confidence }}%</span>
-    </div>
-  </div>
-
-  <!-- MANUAL BUTTONS -->
-  <div class="manual-buttons" *ngIf="!isLoading">
-    <h3>🧪 Test Manually:</h3>
-    <div class="sign-buttons">
-      <button (click)="testSign('B', '🖐️')" class="sign-btn b">🖐️ B</button>
-      <button (click)="testSign('C', '🤏')" class="sign-btn c">🤏 C</button>
-    </div>
-  </div>
-
-  <!-- HISTORY -->
-  <div class="history-section" *ngIf="!isLoading">
-    <div class="history-header">
-      <h2>📋 History ({{ history.length }})</h2>
-      <button (click)="deleteAllHistory()" class="btn-delete" *ngIf="history.length > 0">
-        🗑️ Delete All
-      </button>
-    </div>
+  <!-- ==================== VIEWPORT B: ACTIVE WEBCAM HUB WORKSPACE ==================== -->
+  <div class="active-hub-workspace" *ngIf="isTerminalActive">
     
-    <div *ngIf="history.length === 0" class="empty">
-      <p>No signs detected yet. Show a gesture or click a button!</p>
+    <header class="app-header">
+      <div class="header-nav-row">
+        <button (click)="returnToHome()" class="btn-back-home">← Leave Hub</button>
+        <h1>🤖 SignBridge Pro</h1>
+      </div>
+      <p class="subtitle">User Client Monitor Terminal Layout</p>
+      
+      <div class="role-selector-row">
+        <button (click)="setRole('deaf-user')" class="role-btn" [class.active]="currentRole === 'deaf-user'">♿ User Client</button>
+        <button (click)="setRole('customer-service')" class="role-btn" [class.active]="currentRole === 'customer-service'">🎧 Customer Service Agent</button>
+      </div>
+    </header>
+
+    <div class="status success">
+      <span class="pulse-dot" [class.recording-pulse]="isRecordingSign"></span> {{ message }}
     </div>
-    
-    <ul *ngIf="history.length > 0">
-      <li *ngFor="let log of history.slice().reverse()">
-        <span class="history-emoji">{{ log.signEmoji }}</span>
-        <span class="history-name">{{ log.signName }}</span>
-        <span class="history-time">{{ log.timestamp | date:'short' }}</span>
-      </li>
-    </ul>
+
+    <div class="workspace-split-row">
+      
+      <main class="communication-suite">
+        <div class="facetime-window-container" [class.recording-border]="isRecordingSign">
+          
+          <div class="video-wrapper" [ngClass]="currentRole === 'deaf-user' ? 'remote-video-fullscreen' : 'local-video-floating-card'">
+            <video #webcam id="webcamVideo" class="fullscreen-video" [class.mirror-mode]="currentRole === 'deaf-user'" autoplay playsinline [muted]="currentRole === 'deaf-user'"></video>
+            <div class="video-label-overlay" [ngClass]="currentRole === 'deaf-user' ? 'remote-tag' : 'local-tag'">
+              {{ currentRole === 'deaf-user' ? '● LOCAL MONITOR (YOU)' : 'USER CLIENT' }}
+            </div>
+          </div>
+
+          <div class="video-wrapper" [ngClass]="currentRole === 'deaf-user' ? 'local-video-floating-card' : 'remote-video-fullscreen'">
+            <video #remoteVideo id="remoteVideo" class="fullscreen-video" autoplay playsinline></video>
+            <div class="video-label-overlay" [ngClass]="currentRole === 'deaf-user' ? 'local-tag' : 'remote-tag'">
+              {{ currentRole === 'deaf-user' ? 'AGENT' : '● MAIN TERMINAL (YOU)' }}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="manual-record-deck" *ngIf="currentRole === 'deaf-user'">
+          <button (click)="startSignRecording()" class="btn-rec start" [disabled]="isRecordingSign">
+            ⚫ Start Sign Capture
+          </button>
+          <button (click)="stopSignRecording()" class="btn-rec stop" [disabled]="!isRecordingSign">
+            ⏹️ Stop & Translate
+          </button>
+        </div>
+      </main>
+
+      <div class="subtitle-teleprompter-card">
+        <div class="teleprompter-header">💬 LIVE CONVERSATION TRANSCRIPT</div>
+        
+        <div class="transcript-stream-box">
+          <div *ngFor="let entry of chatLines" class="transcript-line" [ngClass]="entry.sender.toLowerCase().replace(' ', '-')">
+            <span class="sender-tag">[{{ entry.sender }}]:</span> 
+            <span class="text-content">"{{ entry.text }}"</span>
+          </div>
+          <div class="transcript-line system" *ngIf="chatLines.length === 0">
+            <span class="text-content">No dialogue statements logged yet. Use the record controls to sign!</span>
+          </div>
+        </div>
+
+        <div class="badge-row">
+          <div class="audio-badge" *ngIf="currentRole === 'customer-service'">🔊 Audio TTS Active</div>
+          <div class="audio-badge mic-active" *ngIf="currentRole === 'customer-service'">🎙️ Mic Transcribing</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="camera-controls">
+      <button (click)="establishCall()" class="btn-call">🚀 Connect WebRTC Network</button>
+      <button (click)="resetState()" class="btn-reset">🔄 Reset Terminal</button>
+    </div>
+
+    <div class="manual-buttons">
+      <h3>🧪 Test Signal DataChannel Dispatch Manually:</h3>
+      <div class="sign-buttons">
+        <button (click)="testSign('B', '🖐️')" class="sign-btn b">🖐️ Simulate Sign B</button>
+        <button (click)="testSign('C', '🤏')" class="sign-btn c">🤏 Simulate Sign C</button>
+      </div>
+    </div>
+
+    <div class="history-section">
+      <div class="history-header">
+        <h2>📋 Session Translation History Logs ({{ history.length }})</h2>
+        <button (click)="deleteAllHistory()" class="btn-delete" *ngIf="history.length > 0">
+          🗑️ Clear Database Records
+        </button>
+      </div>
+      
+      <div *ngIf="history.length === 0" class="empty">
+        <p>No communications recorded across this active pipeline connection yet.</p>
+      </div>
+      
+      <ul *ngIf="history.length > 0">
+        <li *ngFor="let log of history.slice().reverse()">
+          <span class="history-emoji">{{ log.signEmoji }}</span>
+          <span class="history-name">Detected Sign Name: <strong>{{ log.signName }}</strong></span>
+          <span class="history-time">{{ log.timestamp | date:'mediumTime' }}</span>
+        </li>
+      </ul>
+    </div>
+
   </div>
+
 </div>

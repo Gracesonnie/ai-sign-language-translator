@@ -12,9 +12,8 @@ Browser : http://localhost:8080/api/signs/history
 Frontend: cd C:\Users\HomePC\ai-sign-language-translator\frontend
 ng serve
 
-Browser: http://localhost:4200
+node server.js  
 
-Database: 
 mysql -u root -p
 @Gathonie10#
 SHOW DATABASES;
