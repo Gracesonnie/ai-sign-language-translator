@@ -2,6 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
+export interface SignLog {
+  id: number;
+  signName: string;
+  signEmoji: string;
+  timestamp: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -14,8 +21,8 @@ export class SignService {
     return this.http.post(`${this.apiUrl}/detect`, { signName, signEmoji });
   }
 
-  getHistory(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/history`);
+  getHistory(): Observable<SignLog[]> {
+    return this.http.get<SignLog[]>(`${this.apiUrl}/history`);
   }
 
   deleteAllHistory(): Observable<any> {

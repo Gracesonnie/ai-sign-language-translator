@@ -33,7 +33,6 @@
       
       return {
         predict: async function(image) {
-          // tf.tidy cleans temporary tensors from memory after each frame check
           return tf.tidy(() => {
             let tensor = tf.browser.fromPixels(image)
               .resizeNearestNeighbor([224, 224])
@@ -42,7 +41,7 @@
               .expandDims(0);
             
             const prediction = model.predict(tensor);
-            const data = prediction.dataSync(); // Prevents frame backlog leaks
+            const data = prediction.dataSync();
             
             const results = [];
             for (let i = 0; i < data.length && i < labels.length; i++) {

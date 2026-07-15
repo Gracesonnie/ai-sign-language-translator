@@ -14,6 +14,28 @@ ng serve
 
 node server.js  
 
+# Activate .venv first
+cd C:\Users\HomePC\ai-sign-language-translator
+.\.venv\Scripts\activate
+
+# Now you should see (.venv) in your prompt
+# Then navigate to ml-backend and run
+cd ml-backend
+python app.py
+
+OR
+cd C:\Users\HomePC\ai-sign-language-translator\ml-backend
+.\ml_venv\Scripts\activate
+pip install mediapipe opencv-python numpy scikit-learn flask flask-cors pillow
+python app.py
+
+
+TEST Script
+cd C:\Users\HomePC\ai-sign-language-translator\ml-backend
+.\ml_venv\Scripts\activate
+python test_webcam_fixed.py
+
+
 mysql -u root -p
 @Gathonie10#
 SHOW DATABASES;
