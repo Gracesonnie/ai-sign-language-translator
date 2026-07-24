@@ -51,16 +51,22 @@ export class AppComponent implements OnInit, OnDestroy {
   currentRole: 'deaf-user' | 'customer-service' = 'deaf-user';
   private messageIdCounter = 0;
   
-  // ========== SIGNS ==========
+  // ========== SIGNS - ALL 15 ==========
   signs: Sign[] = [
     { name: 'A', emoji: '✊', confidence: 0 },
     { name: 'B', emoji: '🖐️', confidence: 0 },
     { name: 'C', emoji: '🤟', confidence: 0 },
+    { name: 'F', emoji: '🤙', confidence: 0 },   // NEW
     { name: 'H', emoji: '🤘', confidence: 0 },
     { name: 'I', emoji: '☝️', confidence: 0 },
+    { name: 'L', emoji: '👌', confidence: 0 },
+    { name: 'O', emoji: '👌', confidence: 0 },   // NEW
+    { name: 'Q', emoji: '🤞', confidence: 0 },   // NEW
     { name: 'R', emoji: '🤞', confidence: 0 },
+    { name: 'U', emoji: '🤙', confidence: 0 },   // NEW
     { name: 'V', emoji: '✌️', confidence: 0 },
     { name: 'W', emoji: '🤙', confidence: 0 },
+    { name: 'X', emoji: '✊', confidence: 0 },   // NEW
     { name: 'Y', emoji: '👍', confidence: 0 }
   ];
 
@@ -156,7 +162,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================
-  // DISPLAY NAME & EMOJI HELPERS
+  // DISPLAY NAME & EMOJI HELPERS - ALL 15 SIGNS
   // ============================================================
 
   private getDisplayName(modelName: string | null): string {
@@ -189,15 +195,23 @@ export class AppComponent implements OnInit, OnDestroy {
     }
     
     const emojiMap: { [key: string]: string } = {
+      // ALL 15 SIGNS
       'A': '✊',
       'B': '🖐️',
       'C': '🤟',
+      'F': '🤙',      // NEW
       'H': '🤘',
       'I': '☝️',
+      'L': '👌',
+      'O': '👌',      // NEW
+      'Q': '🤞',      // NEW
       'R': '🤞',
+      'U': '🤙',      // NEW
       'V': '✌️',
       'W': '🤙',
+      'X': '✊',      // NEW
       'Y': '👍',
+      // Friendly names
       'Hello': '👋',
       'Stand': '🧍',
       'Thanks': '🙏',
@@ -214,10 +228,13 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================
-  // SPEECH SYNTHESIS - Voice feedback for agent (FIXED)
+  // SPEECH SYNTHESIS - Voice feedback for agent
   // ============================================================
 
   private speakTextForAgent(text: string): void {
+    console.log(`🔊 speakTextForAgent called with: "${text}"`);
+    console.log(`🔊 Current role: "${this.currentRole}"`);
+    
     // Only speak if agent role is active
     if (this.currentRole !== 'customer-service') {
       console.log('🔇 Not in agent mode, skipping voice');
@@ -238,6 +255,8 @@ export class AppComponent implements OnInit, OnDestroy {
       utterance.pitch = 1.0;
       utterance.volume = 1.0;
       utterance.lang = 'en-US';
+      
+      console.log(`🔊 Speaking: "${text}"`);
       
       // Small delay to ensure browser handles autoplay
       setTimeout(() => {
@@ -412,8 +431,8 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ============================================================
-  // VOICE RECOGNITION (Agent only)
+ // ============================================================
+  // VOICE RECOGNITION (Agent / Synced)
   // ============================================================
 
   private initializeVoiceRecognition(): void {
@@ -426,7 +445,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.speechRecognition.maxAlternatives = 1;
       
       this.speechRecognition.onresult = (event: any) => {
-        if (this.currentRole !== 'customer-service' || !this.isTerminalActive) return;
+        if (!this.isTerminalActive) return;
         
         let final = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -461,7 +480,7 @@ export class AppComponent implements OnInit, OnDestroy {
       this.speechRecognition.onend = () => {
         console.log('🎤 Speech recognition ended');
         this.isVoiceRecognitionRunning = false;
-        if (this.currentRole === 'customer-service' && this.isTerminalActive) {
+        if (this.isTerminalActive) {
           setTimeout(() => this.startVoiceListening(), 500);
         }
       };
@@ -477,12 +496,12 @@ export class AppComponent implements OnInit, OnDestroy {
       return;
     }
     
-    if (this.speechRecognition && this.currentRole === 'customer-service') {
+    if (this.speechRecognition) {
       try {
         this.speechRecognition.start();
         this.isVoiceRecognitionRunning = true;
-        console.log('🎙️ Agent voice recognition started');
-        this.message = '🎙️ Agent is listening... Speak clearly.';
+        console.log('🎙️ Voice recognition started');
+        this.message = '🎙️ Listening... Speak clearly.';
       } catch(e) {
         console.warn('Voice recognition error:', e);
         this.isVoiceRecognitionRunning = false;
@@ -502,8 +521,7 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     }
   }
-
-  // ============================================================
+// ============================================================
   // CHAT MANAGEMENT
   // ============================================================
 
@@ -570,7 +588,7 @@ export class AppComponent implements OnInit, OnDestroy {
             
             if (this.currentRole === 'customer-service') {
               this.speakTextForAgent(`User signed ${displayName}`);
-              this.autoRespondAsAgent(displayName);
+              // Random canned auto-responses removed so only real agent voice responses show
             }
             
             if (this.currentRole === 'customer-service') {
@@ -612,32 +630,8 @@ export class AppComponent implements OnInit, OnDestroy {
   // AUTO RESPOND AS AGENT
   // ============================================================
 
-  private autoRespondAsAgent(userMessage: string): void {
-    const responses = [
-      "Thank you for signing. How can I help you?",
-      "I see. Let me check that for you.",
-      "Got it! I'll look into this right away.",
-      "Is there anything else you'd like to add?",
-      "I understand. Give me a moment.",
-      "Thanks for letting me know.",
-      "Let me get that information for you.",
-      "I appreciate your patience."
-    ];
-    
-    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-    
-    setTimeout(() => {
-      this.addChatMessage('Agent', randomResponse, false);
-      if (this.dataChannel && this.dataChannel.readyState === 'open') {
-        this.dataChannel.send(JSON.stringify({
-          type: 'CHAT_MESSAGE',
-          sender: 'Agent',
-          text: randomResponse,
-          isSign: false
-        }));
-      }
-      console.log('🔊 Agent auto-responded:', randomResponse);
-    }, 1500);
+ private autoRespondAsAgent(userMessage: string): void {
+    // Removed automatic canned responses so the agent only says what is actually spoken or typed.
   }
 
   // ============================================================
@@ -665,7 +659,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================
-  // HELPERS
+  // HELPERS - ALL 15 SIGNS COLORS
   // ============================================================
 
   getColorForSign(signName: string): string {
@@ -673,11 +667,17 @@ export class AppComponent implements OnInit, OnDestroy {
       'A': '#ef4444',
       'B': '#3b82f6',
       'C': '#10b981',
+      'F': '#f59e0b',     // NEW - Yellow
       'H': '#ec4899',
       'I': '#06b6d4',
+      'L': '#f472b6',
+      'O': '#14b8a6',     // NEW - Teal
+      'Q': '#8b5cf6',     // NEW - Purple
       'R': '#8b5cf6',
+      'U': '#f97316',     // NEW - Orange
       'V': '#f59e0b',
       'W': '#f97316',
+      'X': '#ef4444',     // NEW - Red
       'Y': '#14b8a6'
     };
     return colors[signName] || '#6b7280';
@@ -825,7 +825,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================
-  // STOP SIGN RECORDING - UPDATED: Immediately updates history & speaks
+  // STOP SIGN RECORDING - Speaks the sign
   // ============================================================
 
   stopSignRecording(): void {
@@ -852,6 +852,7 @@ export class AppComponent implements OnInit, OnDestroy {
       
       // ✅ SPEAK THE SIGN FOR THE AGENT
       const voiceMessage = `User signed ${displayName}`;
+      console.log(`🔊 Attempting to speak: "${voiceMessage}"`);
       this.speakTextForAgent(voiceMessage);
       
       if (this.dataChannel && this.dataChannel.readyState === 'open') {
@@ -1299,7 +1300,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   // ============================================================
-  // HISTORY - UPDATED: Shows newest first and updates immediately
+  // HISTORY - Shows newest first and updates immediately
   // ============================================================
 
   loadHistory(): void {
@@ -1366,4 +1367,26 @@ export class AppComponent implements OnInit, OnDestroy {
       }
     });
   }
+openGmail() {
+  const email = "gracesonnie11@gmail.com";
+  const subject = encodeURIComponent("Inquiry regarding SignBridge Pro");
+  const body = encodeURIComponent("Hello, I would like to learn more about SignBridge Pro.");
+  
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&to=${email}&su=${subject}&body=${body}`;
+  window.open(gmailUrl, '_blank');
 }
+// ... your existing code ...
+
+  downloadDocumentation() {
+  const link = document.createElement('a');
+  link.href = 'signbridge-pro-documentation.pdf';
+  link.download = 'SIGNBRIDGE_PRO_DOCUMENTATION.pdf';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+
+
+}
+

@@ -1,6 +1,7 @@
 """
 WEBCAM TEST - Works with MediaPipe 0.10.35 (Tasks API)
 FIXED: No mp.solutions used
+Includes support for ALL 15 signs: A, B, C, F, H, I, L, O, Q, R, U, V, W, X, Y
 """
 
 import cv2
@@ -15,7 +16,8 @@ from mediapipe.tasks.python.vision import HandLandmarkerOptions, HandLandmarker
 from mediapipe.tasks.python.vision.core.vision_task_running_mode import VisionTaskRunningMode
 
 print("=" * 60)
-print("🔬 WEBCAM TEST (Tasks API)")
+print("🔬 WEBCAM TEST (Tasks API) - ALL 15 SIGNS")
+print("A, B, C, F, H, I, L, O, Q, R, U, V, W, X, Y")
 print("=" * 60)
 
 # Load model
@@ -66,6 +68,7 @@ if not cap.isOpened():
 
 print("\n📸 Show your hand to the camera")
 print("   Press 'q' to quit")
+print("   Press 'r' to reset")
 print("=" * 60)
 
 prediction = "No hand"
@@ -83,6 +86,9 @@ HAND_CONNECTIONS = [
     (0, 17), (17, 18), (18, 19), (19, 20),  # Pinky
     (5, 9), (9, 13), (13, 17)  # Palm
 ]
+
+# All 15 signs
+ALL_SIGNS = ['A', 'B', 'C', 'F', 'H', 'I', 'L', 'O', 'Q', 'R', 'U', 'V', 'W', 'X', 'Y']
 
 def draw_landmarks(frame, landmarks, connections):
     """Draw hand landmarks and connections on frame"""
@@ -158,6 +164,19 @@ while True:
                     y_pos = 145 + i * 25
                     cv2.putText(frame, f"{classes[idx]}: {probs[idx]:.2%}", (10, y_pos), 
                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1)
+                
+                # Show all available classes in bottom right
+                cv2.putText(frame, f"Classes: {len(classes)}", (frame.shape[1] - 180, 30), 
+                           cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
+                
+                # Check which new signs are in the model
+                new_signs = ['F', 'O', 'Q', 'U', 'X']
+                for i, sign in enumerate(new_signs):
+                    y_pos = 55 + i * 20
+                    status = "✅" if sign in classes else "❌"
+                    color = (0, 255, 0) if sign in classes else (0, 0, 255)
+                    cv2.putText(frame, f"{status} {sign} in model", (frame.shape[1] - 180, y_pos), 
+                               cv2.FONT_HERSHEY_SIMPLEX, 0.4, color, 1)
             else:
                 cv2.putText(frame, f"Invalid landmarks: {len(landmarks)}", (10, 40), 
                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -175,10 +194,15 @@ while True:
     cv2.putText(frame, f"FPS: {fps:.0f}", (frame.shape[1] - 120, 30), 
                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 200, 200), 1)
     
-    cv2.imshow('Sign Recognition - Live', frame)
+    cv2.imshow('Sign Recognition - All 15 Signs', frame)
     
-    if cv2.waitKey(1) & 0xFF == ord('q'):
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord('q'):
         break
+    elif key == ord('r'):
+        prediction = "No hand"
+        confidence = 0.0
+        print("🔄 Reset")
 
 cap.release()
 cv2.destroyAllWindows()

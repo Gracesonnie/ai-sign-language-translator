@@ -1,41 +1,40 @@
-*RUN AS ADMIN*
 
-Database : taskkill /F /IM mysqld.exe
+*RUN AS ADMIN*
+# Stop the current process (Ctrl+C if running)
+
+
+  1. Database : taskkill /F /IM mysqld.exe
 net start MySQL80
 browser view : http://localhost:8080/api/signs/history
 
-Backend: cd C:\Users\HomePC\ai-sign-language-translator\backend\sign-translator
+  2. # Activate ml_venv instead of .venv
+cd C:\Users\HomePC\ai-sign-language-translator\ml-backend
+.\ml_venv\Scripts\activate
+python app.py
+
+  3. Backend: cd C:\Users\HomePC\ai-sign-language-translator\backend\sign-translator
 .\mvnw spring-boot:run
 
 Browser : http://localhost:8080/api/signs/history
 
-Frontend: cd C:\Users\HomePC\ai-sign-language-translator\frontend
-ng serve
+  4. #webconnect... from agent - client
+node server.js 
 
-node server.js  
-
-# Activate .venv first
-cd C:\Users\HomePC\ai-sign-language-translator
-.\.venv\Scripts\activate
-
-# Now you should see (.venv) in your prompt
-# Then navigate to ml-backend and run
-cd ml-backend
-python app.py
-
-OR
-cd C:\Users\HomePC\ai-sign-language-translator\ml-backend
-.\ml_venv\Scripts\activate
-pip install mediapipe opencv-python numpy scikit-learn flask flask-cors pillow
-python app.py
-
-
-TEST Script
+  5. #TO VIEW MODEL
 cd C:\Users\HomePC\ai-sign-language-translator\ml-backend
 .\ml_venv\Scripts\activate
 python test_webcam_fixed.py
 
+q to quit ... to use camera in local host app
 
+  6. Frontend: cd C:\Users\HomePC\ai-sign-language-translator\frontend
+ng serve
+
+
+
+
+
+*SEE DATABASEI IN THE TERMINAL
 mysql -u root -p
 @Gathonie10#
 SHOW DATABASES;
